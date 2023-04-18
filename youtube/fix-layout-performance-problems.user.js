@@ -441,10 +441,12 @@ const mutationsHasAddedNodes = mutations => mutations.find(mutation => (
         ytd-comment-thread-renderer {
           content-visibility: auto;
           contain-intrinsic-size: auto 1px auto 100px;
+          contain: content;
         }
         ytd-playlist-panel-video-renderer {
-          content-visibility: auto;
-          contain-intrinsic-size: auto 1px auto 70px;
+            content-visibility: auto;
+            contain-intrinsic-size: auto 1px auto 62px;
+            contain: strict;
         }
         ytd-playlist-video-renderer {
           content-visibility: auto;
@@ -460,7 +462,8 @@ const mutationsHasAddedNodes = mutations => mutations.find(mutation => (
         ytd-compact-radio-renderer,
         ytd-compact-playlist-renderer {
           content-visibility: auto;
-          contain-intrinsic-size: auto 1px auto 94px;
+          contain-intrinsic-size: auto 1px auto 98px;
+          contain: strict;
         }
         ytd-grid-video-renderer {
           content-visibility: auto;
@@ -477,6 +480,17 @@ const mutationsHasAddedNodes = mutations => mutations.find(mutation => (
         yt-live-chat-membership-item-renderer {
           content-visibility: auto;
           contain-intrinsic-size: auto 1px auto 32px;
+        }
+
+        #microformat,
+        #panels.ytd-watch-flexy, /* Engagement panels above the secondary column */
+        yt-interaction,
+        ytd-thumbnail-overlay-now-playing-renderer.ytd-thumbnail,
+        #buttons.ytd-compact-video-renderer,
+        #additional-metadata-line.ytd-video-meta-block,
+        tp-yt-paper-tooltip.ytd-channel-name
+        {
+          display: none;
         }
     `;
     document.head.appendChild(styleElem);
