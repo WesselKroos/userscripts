@@ -1,3 +1,15 @@
+// ==UserScript==
+// @name         YouTube layout - Fixes all kind of performance problems
+// @namespace    https://dev.azure.com/
+// @version      0.1
+// @description  Several fixes for performance problems in the YouTube layout
+// @author       Wessel Kroos
+// @match        https://www.youtube.com/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
+// @grant        none
+// ==/UserScript==
+
+
 // Throttle window resizes
 (function () {
     let scheduledResize;
