@@ -397,3 +397,68 @@
     })
     mutationObserver.observe(document.body, { childList: true, subtree: true })
 })();
+
+
+// Prevent element size recalculations of invisible elements
+(function () {
+    const styleElem = document.createElement('style');
+    styleElem.id = 'fix-layout-performance-problems-style';
+    styleElem.textContent = `
+        #player-container {
+          contain-intrinsic-size: auto 1px auto calc(100vh - 82px - 138px);
+        }
+        primary-inner > #info {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 110px;
+        }
+        primary-inner > #meta {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 180px;
+        }
+        primary-inner > #ticket-shelf {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 140px;
+        }
+        ytd-comment-thread-renderer {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 100px;
+        }
+        ytd-playlist-panel-video-renderer {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 70px;
+        }
+        ytd-playlist-video-renderer {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 101px;
+        }
+        yt-related-chip-cloud-renderer {
+          display: block;
+          height: 51px;
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 51px;
+        }
+        ytd-compact-video-renderer,
+        ytd-compact-radio-renderer,
+        ytd-compact-playlist-renderer {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 94px;
+        }
+        ytd-grid-video-renderer {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 239px;
+        }
+        yt-live-chat-text-message-renderer {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 32px;
+        }
+        yt-live-chat-paid-message-renderer {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 32px;
+        }
+        yt-live-chat-membership-item-renderer {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 1px auto 32px;
+        }
+    `;
+    document.head.appendChild(styleElem);
+})();
