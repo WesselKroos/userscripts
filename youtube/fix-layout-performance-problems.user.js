@@ -10,6 +10,13 @@
 // ==/UserScript==
 
 
+// Generic function used in some features
+const mutationsHasAddedNodes = mutations => mutations.find(mutation => (
+    mutation.addedNodes?.length && 
+    [...mutation.addedNodes].find(addedNode => addedNode.tagName && addedNode.tagName !== 'svg') // ignore text nodes
+));
+
+
 // Throttle window resizes
 (function () {
     let scheduledResize;
