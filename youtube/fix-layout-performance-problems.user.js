@@ -64,6 +64,7 @@ const mutationsHasAddedNodes = mutations => mutations.find(mutation => (
     window.getComputedStyle = function(...args) {
         // console.log('getComputedStyle', ...args)
         if(
+            args[0].id === 'item-scroller' || // live chat messages list
             args[0].id === 'items' || // scrollable list
             args[0].tagName === 'TP-YT-PAPER-DIALOG' // Save to playlist dialog
         )
