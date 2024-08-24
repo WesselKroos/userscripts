@@ -42,7 +42,7 @@
                  window.maybeUpdateFlexibleMenuImplMaxCounters[index] = previousCallTimes.length;
             }
 
-            if(previousCallTimes.length > 20) {
+            if(previousCallTimes.length > 10) {
                 console.log(`!!!!!!!!!!!!!!! Called maybeUpdateFlexibleMenuImpl[${index}] ${previousCallTimes.length} times in a second. Delaying by a second...`);
                 debugger;
 
