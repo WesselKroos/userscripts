@@ -36,23 +36,23 @@
         globalThis.OnChangeExpandableTimeProject = new Function(`return async ${func}`)();
     }
 
+    // Save hour type value
+    document.addEventListener('keyup', async (e) => {
+        const elem = e.target;
+        if(!elem?.id?.match?.(/^mtx_r[0-9]+_Item_alt$/)) return;
+
+        localStorage.setItem('autofillDefaultHourType', elem.value);
+    });
+
     // Auto open browser or focus next
     let openedBrowser = false;
-    //const onBrowseActivityMouseUp = (e) => {
-    //    const alreadyOpen = window.parent?.document?.querySelector?.('.ui-widget-overlay');
-    //    console.log('alreadyOpen mouseup', alreadyOpen);
-    //    if(!alreadyOpen) return;
-    //    //e.stopPropagation();
-    //};
-
-
     document.addEventListener('focusin', async () => {
         let alreadyOpen = window.parent?.document?.querySelector?.('.ui-widget-overlay');
         if(alreadyOpen) return;
 
         await new Promise(resolve => setTimeout(resolve, 1));
         const elem = document.activeElement;
-        if(!elem.id.endsWith('_ProjectWBS')) {
+        if(!elem?.id?.match?.(/^pmtx_r[0-9]+_ProjectWBS$/)) {
             return;
         }
 
@@ -83,9 +83,14 @@
             const account = elem.closest('#colAccount');
             const type = account.querySelector('[id$="_Item_alt"]');
             if(!type.value) {
-                console.log('auto fill Type field');
                 type.focus();
-                type.value = 'DEV';
+                const defaultValue = await localStorage.getItem('autofillDefaultHourType');
+                if(!defaultValue) {
+                    console.log('No previous "hour type" value has been saved yet.');
+                    return;
+                }
+                console.log('auto fill Type field');
+                type.value = defaultValue;
                 type.click();
                 await new Promise(resolve => setTimeout(resolve, 1));
                 const event = new InputEvent("change", { });
