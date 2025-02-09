@@ -21,8 +21,8 @@
     if(globalThis.getSysInputTimeoutGradientValue) {
         globalThis.getSysInputTimeoutGradientValue = new Function(`return ${
             getSysInputTimeoutGradientValue.toString()
-            .replace('.min || 600;', '.min || 1;')
-            .replace('.max || 300;', '.max || 0;')
+            .replace('.min || 600;', '.min || 250;')
+            .replace('.max || 300;', '.max || 10;')
         }`)();
     }
 
@@ -103,11 +103,39 @@
         }
     });
 
+    // Autoremember last filled day
+    let lastDayColumn = 1;
+    document.addEventListener('focusout', async (e) => {
+        const elem = e.target;
+        const dayIndex = elem?.id?.match?.(/^mtx_r[0-9]{1,}_c([0-9])_Quantity$/)?.[1];
+        if(!dayIndex || !elem.value) {
+            const wasNote = elem.parentNode?.id === 'colNotes' && elem.id.endsWith('_Notes');
+            if(!wasNote) return;
+            const nextDayIndex = e.relatedTarget?.id?.match?.(/^mtx_r[0-9]{1,}_c([0-9])_Quantity$/)?.[1];
+            if(!nextDayIndex) return;
+            autoFocusLastDay(elem);
+            return;
+        }
+
+        lastDayColumn = parseInt(dayIndex, 10);
+        console.log('Last filled day:', lastDayColumn);
+    });
+
+    // Autofocus last filled day
+    const autoFocusLastDay = async (elemInRow) => {
+        const row = elemInRow.closest('tr');
+        const day = row.querySelector(`[id^="mtx_r"][id$="_c${lastDayColumn}_Quantity"]`);
+        if(!day) return;
+        day.focus();
+        return day;
+    };
+
     // Auto paste workitem
     let lastAutoFilledNote;
     const autoFillNote = async () => {
         const elem = document.activeElement;
-        if(elem.parentNode?.id !== 'colNotes' || !elem.id.endsWith('_Notes') || elem.disabled || elem.readOnly || elem.value) return;
+        const isNote = elem.parentNode?.id === 'colNotes' && elem.id.endsWith('_Notes');
+        if(!isNote || elem.disabled || elem.readOnly || elem.value) return;
 
         let text = await (async () => {
             const clipboardContents = await navigator.clipboard.read();
@@ -121,8 +149,9 @@
             return;
         }
 
-        if(text.match(/^Product backlog item #[0-9]{2,} /)) {
-            text = text.substring('Product backlog item #'.length);
+        const workItemInfo = text.match(/^[A-z ]+ ([0-9]{2,}): /);
+        if(workItemInfo) {
+            text = `${workItemInfo[1]} ${text.substring(workItemInfo[0].length)}`;
         }
         if(!text.match(/^[0-9]{2,} /)) {
             lastAutoFilledNote = undefined;
@@ -133,24 +162,24 @@
         elem.value = text;
         lastAutoFilledNote = text;
 
-        // Autofocus last filled day
-        const row = elem.closest('tr');
-        const day = row.querySelector(`[id^="mtx_r"][id$="_c${lastDayColumn}_Quantity"]`);
+        const day = await autoFocusLastDay(elem);
         if(!day) return;
-        day.focus();
+
+        // Regain day focus after autofill on click
         await new Promise(resolve => {
             const timeout = setTimeout(() => {
-                day.removeEventListener('blur', onBlur, { once: true });
+                elem.removeEventListener('mouseup', onMouseup, { once: true });
                 resolve();
-            }, 1000);
-            const onBlur = async () => {
+            }, 2000);
+            const onMouseup = async () => {
                 clearTimeout(timeout);
                 await new Promise(resolve => setTimeout(resolve, 1));
                 resolve();
             };
-            day.addEventListener('blur', onBlur, { once: true });
+            elem.addEventListener('mouseup', onMouseup, { once: true });
         });
         if(document.activeElement === day) return;
+
         day.focus();
     };
 
@@ -165,16 +194,4 @@
         await new Promise(resolve => setTimeout(resolve, 1));
         autoFillNote();
     }, false);
-
-    // Autoremember last filled day
-    let lastDayColumn = 1;
-    document.addEventListener('focusout', async (e) => {
-        //await new Promise(resolve => setTimeout(resolve, 1));
-        const elem = e.target;
-        const dayIndex = elem?.id?.match?.(/^mtx_r[0-9]{1,}_c([0-9])_Quantity$/)?.[1];
-        if(!dayIndex || !elem.value) return;
-
-        lastDayColumn = parseInt(dayIndex, 10);
-        console.log('Last filled day:', lastDayColumn);
-    });
 })();
