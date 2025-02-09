@@ -5,7 +5,7 @@
 // @description  A badge and notification for active pull requests
 // @author       Wessel Kroos
 // @match        https://dev.azure.com/*
-// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=azure.com
 // @grant        none
 // ==/UserScript==
 
