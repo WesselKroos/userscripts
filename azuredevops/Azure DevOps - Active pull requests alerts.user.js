@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Azure DevOps Tools - Active pull requests alerts
+// @name         Azure DevOps - Active pull requests alerts
 // @namespace    https://dev.azure.com/
 // @version      0.1
 // @description  A badge and notification for active pull requests
