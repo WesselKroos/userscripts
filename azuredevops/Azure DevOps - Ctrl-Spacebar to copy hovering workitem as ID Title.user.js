@@ -4,7 +4,7 @@
 // @version      2025-02-09
 // @description  
 // @author       Wessel K
-// @match        https://dev.azure.com/truelime/Deltion%20College/_sprints/taskboard/Team%20Back-end/Deltion%20College/Sprint%2057?workitem=128877
+// @match        https://dev.azure.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=azure.com
 // @grant        none
 // ==/UserScript==
