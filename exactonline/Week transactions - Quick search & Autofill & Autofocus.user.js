@@ -21,7 +21,7 @@
     if(globalThis.getSysInputTimeoutGradientValue) {
         globalThis.getSysInputTimeoutGradientValue = new Function(`return ${
             getSysInputTimeoutGradientValue.toString()
-            .replace('.min || 600;', '.min || 250;')
+            .replace('.min || 600;', '.min || 200;')
             .replace('.max || 300;', '.max || 10;')
         }`)();
     }
@@ -30,7 +30,7 @@
     if(globalThis.OnChangeExpandableTimeProject) {
         const func = `${OnChangeExpandableTimeProject.toString()
         .replace('\n}', '')
-        .replaceAll('\n', '\nawait new Promise(resolve => setTimeout(resolve, 1));\n')
+        .replace('\n', '\nawait new Promise(resolve => setTimeout(resolve, 1));\n')
         }}`;
 
         globalThis.OnChangeExpandableTimeProject = new Function(`return async ${func}`)();
@@ -43,6 +43,32 @@
 
         localStorage.setItem('autofillDefaultHourType', elem.value);
     });
+
+    const autoFillType = async (type) => {
+        if(!type.value) {
+            type.focus();
+            const defaultValue = await localStorage.getItem('autofillDefaultHourType');
+            if(!defaultValue) {
+                console.log('No previous "hour type" value has been saved yet.');
+                return;
+            }
+            console.log('auto fill Type field', defaultValue);
+            type.value = defaultValue;
+            type.click();
+            await new Promise(resolve => setTimeout(resolve, 1));
+            const event = new InputEvent("change", { });
+            Object.defineProperty(event, 'target', {writable: false, value: type});
+            type.onchange(event);
+            await new Promise(resolve => setTimeout(resolve, 1));
+        }
+
+        if(type.value) {
+            console.log('Type field already has value. Focus to note.', type.value);
+            const row = type.closest('tr');
+            const note = row.querySelector('#colNotes textarea');
+            note?.focus();
+        }
+    };
 
     // Auto open browser or focus next
     let openedBrowser = false;
@@ -79,33 +105,26 @@
             }, { once: true });
         } else {
             openedBrowser = false;
+            console.log('auto skip Activity field');
 
             const account = elem.closest('#colAccount');
             const type = account.querySelector('[id$="_Item_alt"]');
-            if(!type.value) {
-                type.focus();
-                const defaultValue = await localStorage.getItem('autofillDefaultHourType');
-                if(!defaultValue) {
-                    console.log('No previous "hour type" value has been saved yet.');
-                    return;
-                }
-                console.log('auto fill Type field');
-                type.value = defaultValue;
-                type.click();
-                await new Promise(resolve => setTimeout(resolve, 1));
-                const event = new InputEvent("change", { });
-                Object.defineProperty(event, 'target', {writable: false, value: type});
-                type.onchange(event);
-                await new Promise(resolve => setTimeout(resolve, 1));
-            }
-
-            if(type.value) {
-                console.log('auto skip Activity field');
-                const row = elem.closest('tr');
-                const note = row.querySelector('#colNotes textarea');
-                note?.focus();
-            }
+            autoFillType(type);
         }
+    });
+
+    document.addEventListener('focusin', async (e) => {
+        if(!e.target?.id?.match?.(/^mtx_r[0-9]+_Item_alt$/)) {
+            return;
+        }
+
+        if(!(
+            e.relatedTarget?.id?.match?.(/^pmtx_r[0-9]+_ProjectWBS$/) ||
+            e.relatedTarget?.id?.match?.(/^mtx_r[0-9]+_Project_alt$/)
+        )) return;
+
+        await new Promise(resolve => setTimeout(resolve, 1));
+        autoFillType(e.target);
     });
 
     // Autoremember last filled day
